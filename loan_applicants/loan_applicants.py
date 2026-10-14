@@ -7,7 +7,7 @@ from connor_ml.scaler import Scaler
 from connor_ml.evaluator import Evaluator
 
 CSV_FILE = "ml_loan_applicants.csv"
-RANDOM_STATE = 42
+RANDOM_STATE = 33
 
 # Get the .csv file to be read
 file_path = Path(__file__).parent / CSV_FILE
@@ -28,9 +28,9 @@ perceptron.fit(X_train_standardized, y_train)
 
 y_pred = perceptron.predict(X_test_standardized)
 
-print(y_pred)
-print(y_test.to_numpy())
-
 evaluator = Evaluator(y_pred, y_test)
 accuracy = evaluator.get_accuracy()
 print("Accuracy:", accuracy)
+
+precision = evaluator.get_precision(1)
+print("Precision:", precision)

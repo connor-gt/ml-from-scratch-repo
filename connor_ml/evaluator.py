@@ -64,8 +64,29 @@ class Evaluator:
         results = self.y_ == self.t_
         return results.sum() / self.total_ # NumPy treats True as 1 and False as 0, sum gets the count of correct predictions
 
-    def get_precision(y_pred: pd.Series | np.ndarray, targets: pd.Series | np.ndarray):
-        return 0
+    def get_precision(self, positive_class: any):
 
-    def get_recall(y_pred: pd.Series | np.ndarray, targets: pd.Series | np.ndarray):
+        predicted_positives = self.y_ == positive_class
+        true_positives = predicted_positives & (self.t_ == positive_class)
+
+        tp_count = true_positives.sum()
+        predicted_positive_count = predicted_positives.sum()
+
+        return tp_count / predicted_positive_count
+        
+        # previous attempts
+        predicted_positives = self.y_ == positive_class
+        true_positives = self.t_ == positive_class
+        false_positives = predicted_positives.sum() - true_positives.sum()
+        print(predicted_positives)
+        print(true_positives)
+        print(false_positives)
+        tp_count = true_positives.sum()
+        return tp_count / (tp_count + false_positives)
+        positive_predictions = self.y_[predicted_positives]
+        print(positive_predictions)
+        print(self.t_[predicted_positives])
+        results = self.y_ == self.t_
+
+    def get_recall(self):
         return 0
