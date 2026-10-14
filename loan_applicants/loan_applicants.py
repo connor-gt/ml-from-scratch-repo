@@ -4,6 +4,7 @@ import pandas as pd
 from connor_ml.train_selection import train_test_split
 from connor_ml.perceptron import Perceptron
 from connor_ml.scaler import Scaler
+from connor_ml.evaluator import Evaluator
 
 CSV_FILE = "ml_loan_applicants.csv"
 RANDOM_STATE = 42
@@ -26,6 +27,10 @@ perceptron = Perceptron(max_epochs=100, learning_rate=0.1, random_state=RANDOM_S
 perceptron.fit(X_train_standardized, y_train)
 
 y_pred = perceptron.predict(X_test_standardized)
+
 print(y_pred)
+print(y_test.to_numpy())
 
-
+evaluator = Evaluator(y_pred, y_test)
+accuracy = evaluator.get_accuracy()
+print("Accuracy:", accuracy)
