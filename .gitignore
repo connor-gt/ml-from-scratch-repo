@@ -1,4 +1,6 @@
-# Ignore pycache files
-*.pyc
+# Ignore pycache and virtual environment files
+.venv/
+__pycache__/
+*.egg-info/
 
 python_pandas_indexing_cheatsheet.py

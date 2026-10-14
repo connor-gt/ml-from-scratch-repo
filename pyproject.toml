@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools >= 77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "connor-ml"
+version = "0.1.0"
+authors = [
+    { name = "Connor Trempe", email = "connor@ccgstudiogames.com" }
+]
+description = "My implementations of machine learning algorithms and utilities as I learn the fundamentals of ML."
+requires-python = " >= 3.10"
+license = "MIT"
+dependencies = [
+    "numpy",
+    "pandas"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["connor_ml*"]
