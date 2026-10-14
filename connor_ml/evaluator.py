@@ -64,7 +64,7 @@ class Evaluator:
         results = self.y_ == self.t_
         return results.sum() / self.total_ # NumPy treats True as 1 and False as 0, sum gets the count of correct predictions
 
-    def get_precision(self, positive_class: any) -> float:
+    def get_precision(self, positive_class) -> float:
         '''Calculate precision for a specified class using the stored predictions and targets.
 
         Precision = True Positives / (True Positives + False Positives)
@@ -76,12 +76,18 @@ class Evaluator:
             classification).
 
         Returns:
-            The precision for the specified class as a value between 0.0 and 1.0.
+            The precision for the specified class as a value between 0.0 and 1.0. Returns 0 if the total predicted
+            count is 0 (prevents division by 0).
         '''
 
         predicted_positives = self.y_ == positive_class
         true_predicted_positives = predicted_positives & (self.t_ == positive_class)
-        return true_predicted_positives.sum() / predicted_positives.sum()
+
+        predicted_count = predicted_positives.sum()
+        if predicted_count == 0:
+            return 0
+
+        return true_predicted_positives.sum() / predicted_count
 
     def get_recall(self) -> float:
         return 0
