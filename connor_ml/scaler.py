@@ -13,9 +13,9 @@ class Scaler:
     '''
 
     def __init__(self):
-        # Means of each column are stored in a pd.Series or a is a scalar if the input is a pd.Series
+        # Means of each column are stored in a pd.Series or as a scalar if the input itself is a pd.Series
         self.means_ = None
-        # Standard deviations of each column are stored in a pd.Series or is a scalar if the input is a pd.Series
+        # Standard deviations of each column are stored in a pd.Series or as a scalar if the input itself is a pd.Series
         self.std_devs_ = None
 
     def fit(self, X: pd.DataFrame | pd.Series):
