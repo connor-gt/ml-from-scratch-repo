@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 class Evaluator:
-    def __init__(self, y_pred: pd.Series | np.ndarray, targets: pd.Series | np.ndarray):
+    def __init__(self, y_pred: pd.Series | np.ndarray, targets: pd.Series | np.ndarray) -> None:
         '''Initialize an evaluator with predicted and actual target values.
 
         Stores the predictions and corresponding target values for calculating evaluation metrics.
@@ -14,7 +14,7 @@ class Evaluator:
 
         self.set(y_pred, targets)
 
-    def set(self, y_pred: pd.Series | np.ndarray, targets: pd.Series | np.ndarray):
+    def set(self, y_pred: pd.Series | np.ndarray, targets: pd.Series | np.ndarray) -> None:
         '''Set this evaluator's predictions and actual target values to use for calculations.
 
         Allows the same Evaluator instance to be reused with different prediction results. Predictions and targets must each
@@ -44,13 +44,13 @@ class Evaluator:
         self.t_ = targets.to_numpy() if isinstance(targets, pd.Series) else targets
         self.total_ = len(targets)
 
-    def get_accuracy(self):
+    def get_accuracy(self) -> float:
         '''Calculate classification accuracy for the stored predictions.
 
-        Accuracy = (Number of correct predictions) / (Total predictions).
+        Accuracy = (True Positives + True Negatives (e.g., number of correct predictions)) / Total Predictions.
 
         Returns:
-            float: Classification accuracy ranging from 0.0 to 1.0, where 1.0 indicates that every prediction was correct.
+            Classification accuracy ranging from 0.0 to 1.0, where 1.0 indicates that every prediction was correct.
 
         Notes:
             This metric is intended for classification, not regression. For continuous predictions, consider MAE or MSE
@@ -64,29 +64,24 @@ class Evaluator:
         results = self.y_ == self.t_
         return results.sum() / self.total_ # NumPy treats True as 1 and False as 0, sum gets the count of correct predictions
 
-    def get_precision(self, positive_class: any):
+    def get_precision(self, positive_class: any) -> float:
+        '''Calculate precision for a specified class using the stored predictions and targets.
+
+        Precision = True Positives / (True Positives + False Positives)
+
+        "Out of how many positive predictions were made, how many were actually positive?"
+
+        Args:
+            positive_class: The class label to evaluate (e.g., 1 for binary classification or 2 for multiclass
+            classification).
+
+        Returns:
+            The precision for the specified class as a value between 0.0 and 1.0.
+        '''
 
         predicted_positives = self.y_ == positive_class
-        true_positives = predicted_positives & (self.t_ == positive_class)
+        true_predicted_positives = predicted_positives & (self.t_ == positive_class)
+        return true_predicted_positives.sum() / predicted_positives.sum()
 
-        tp_count = true_positives.sum()
-        predicted_positive_count = predicted_positives.sum()
-
-        return tp_count / predicted_positive_count
-        
-        # previous attempts
-        predicted_positives = self.y_ == positive_class
-        true_positives = self.t_ == positive_class
-        false_positives = predicted_positives.sum() - true_positives.sum()
-        print(predicted_positives)
-        print(true_positives)
-        print(false_positives)
-        tp_count = true_positives.sum()
-        return tp_count / (tp_count + false_positives)
-        positive_predictions = self.y_[predicted_positives]
-        print(positive_predictions)
-        print(self.t_[predicted_positives])
-        results = self.y_ == self.t_
-
-    def get_recall(self):
+    def get_recall(self) -> float:
         return 0
