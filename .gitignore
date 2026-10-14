@@ -1,0 +1,4 @@
+# Ignore pycache files
+*.pyc
+
+python_pandas_indexing_cheatsheet.py
