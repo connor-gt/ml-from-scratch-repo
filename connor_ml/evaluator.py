@@ -89,5 +89,26 @@ class Evaluator:
 
         return true_predicted_positives.sum() / predicted_count
 
-    def get_recall(self) -> float:
-        return 0
+    def get_recall(self, positive_class) -> float:
+        '''Calculate recall for a specified class using the stored predictions and targets.
+
+        "Out of all of the data that really is positive, how many were identified?"
+
+        Args:
+            positive_class: The class label to evaluate (e.g., 1 for binary classification or 2 for multiclass
+            classification).
+
+        Returns:
+            The recall for the specified class as a value between 0.0 and 1.0.
+        '''
+
+        predicted_positives = self.y_ == positive_class
+        print(predicted_positives)
+        print(self.t_ == positive_class)
+
+        total_positives = predicted_positives & (self.t_ != positive_class)
+
+        print(predicted_positives.sum())
+        print(total_positives.sum())
+
+        return predicted_positives.sum() / total_positives.sum()

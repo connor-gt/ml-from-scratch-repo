@@ -4,3 +4,4 @@ __pycache__/
 *.egg-info/
 
 python_pandas_indexing_cheatsheet.py
+loan_applicants_random_state.md

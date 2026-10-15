@@ -7,7 +7,39 @@ from connor_ml.scaler import Scaler
 from connor_ml.evaluator import Evaluator
 
 CSV_FILE = "ml_loan_applicants.csv"
-RANDOM_STATE = 33
+# ============================================================
+# TEST CONFIGURATIONS FOR EVALUATOR
+# ============================================================
+# These random states produce different combinations of false
+# positives (FP) and false negatives (FN), making them useful
+# for testing accuracy, precision, and recall.
+#
+# Required configuration for all seeds:
+#   test_size     = 0.012   (12 test samples)
+#   max_epochs    = 1
+#   learning_rate = 0.1
+#
+# Random State | Incorrect | FP | FN
+# ----------------------------------
+#       2277   |     4     |  2 |  2
+#       1778   |     4     |  1 |  3
+#       1068   |     4     |  1 |  3
+#        725   |     4     |  1 |  3
+#       1932   |     3     |  2 |  1
+#       1482   |     3     |  2 |  1
+#       1071   |     3     |  2 |  1
+#        180   |     3     |  2 |  1
+#
+# FP: Model predicts 1, but actual target is 0.
+# FN: Model predicts 0, but actual target is 1.
+#
+# Recommended starting seed: 2277 (2 FP and 2 FN).
+#
+# NOTE: These results depend on using the same dataset,
+# preprocessing, train/test split, and perceptron implementation.
+# Changing those may change the prediction results.
+# ============================================================
+RANDOM_STATE = 2277
 
 # Get the .csv file to be read
 file_path = Path(__file__).parent / CSV_FILE
@@ -17,13 +49,13 @@ df = pd.read_csv(file_path) # this always returns a DataFrame so it can just be 
 X = df.drop(columns=["approved"])
 y = df["approved"]
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=RANDOM_STATE)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.012, random_state=RANDOM_STATE)
 
 scaler = Scaler()
 X_train_standardized = scaler.fit_transform(X_train)
 X_test_standardized = scaler.transform(X_test)
 
-perceptron = Perceptron(max_epochs=100, learning_rate=0.1, random_state=RANDOM_STATE)
+perceptron = Perceptron(max_epochs=1, learning_rate=0.1, random_state=RANDOM_STATE)
 perceptron.fit(X_train_standardized, y_train)
 
 y_pred = perceptron.predict(X_test_standardized)
@@ -34,3 +66,6 @@ print("Accuracy:", accuracy)
 
 precision = evaluator.get_precision(1)
 print("Precision:", precision)
+
+recall = evaluator.get_recall(1)
+print("Recall:", recall)
