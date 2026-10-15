@@ -81,16 +81,18 @@ class Evaluator:
         '''
 
         predicted_positives = self.y_ == positive_class
-        true_predicted_positives = predicted_positives & (self.t_ == positive_class)
+        true_positives = predicted_positives & (self.t_ == positive_class)
 
         predicted_count = predicted_positives.sum()
         if predicted_count == 0:
             return 0
 
-        return true_predicted_positives.sum() / predicted_count
+        return true_positives.sum() / predicted_count
 
     def get_recall(self, positive_class) -> float:
         '''Calculate recall for a specified class using the stored predictions and targets.
+
+        Recall = True Positives / (True Positives + False Negatives) (e.g., True Positives / All actual positives)
 
         "Out of all of the data that really is positive, how many were identified?"
 
@@ -103,12 +105,5 @@ class Evaluator:
         '''
 
         predicted_positives = self.y_ == positive_class
-        print(predicted_positives)
-        print(self.t_ == positive_class)
-
-        total_positives = predicted_positives & (self.t_ != positive_class)
-
-        print(predicted_positives.sum())
-        print(total_positives.sum())
-
-        return predicted_positives.sum() / total_positives.sum()
+        true_positives = predicted_positives & (self.t_ == positive_class)
+        return true_positives.sum() / (self.t_ == positive_class).sum() # (self.t_ == positive_class).sum() == all actual positives
