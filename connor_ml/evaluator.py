@@ -138,8 +138,8 @@ class Evaluator:
         print("FN", fn_count)
 
         confusion_matrix = {
-            "Predicted Positive": [tp_count, fn_count, tp_count + fn_count],
-            "Predicted Negative": [fp_count, tn_count, fp_count + tn_count],
+            "Predicted Positive": [tp_count, fp_count, tp_count + fp_count],
+            "Predicted Negative": [fn_count, tn_count, fn_count + tn_count],
             "Total": [actually_positive_count, actually_negative_count, actually_positive_count + actually_negative_count]
         }
 
