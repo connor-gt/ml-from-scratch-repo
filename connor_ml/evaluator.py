@@ -107,3 +107,40 @@ class Evaluator:
         predicted_positives = self.y_ == positive_class
         true_positives = predicted_positives & (self.t_ == positive_class)
         return true_positives.sum() / (self.t_ == positive_class).sum() # (self.t_ == positive_class).sum() == all actual positives
+
+    def get_confusion_matrix(self, positive_class):
+        '''
+        '''
+
+        predicted_positives = self.y_ == positive_class
+
+        true_positives = predicted_positives & (self.t_ == positive_class)
+        false_positives = predicted_positives & (self.t_ != positive_class)
+
+        predicted_negatives = self.y_ != positive_class
+
+        true_negatives = predicted_negatives & (self.t_ != positive_class)
+        false_negatives = predicted_negatives & (self.t_ == positive_class)
+
+        tp_count = true_positives.sum()
+        fp_count = false_positives.sum()
+
+        tn_count = true_negatives.sum()
+        fn_count = false_negatives.sum()
+
+        actually_positive_count = np.sum(self.t_ == positive_class)
+        actually_negative_count = np.sum(self.t_ != positive_class)
+
+        print("TP", tp_count)
+        print("FP", fp_count)
+
+        print("TN", tn_count)
+        print("FN", fn_count)
+
+        confusion_matrix = {
+            "Predicted Positive": [tp_count, fn_count, tp_count + fn_count],
+            "Predicted Negative": [fp_count, tn_count, fp_count + tn_count],
+            "Total": [actually_positive_count, actually_negative_count, actually_positive_count + actually_negative_count]
+        }
+
+        return pd.DataFrame(confusion_matrix, index=["Actually Positive", "Actually Negative", "Total"])
