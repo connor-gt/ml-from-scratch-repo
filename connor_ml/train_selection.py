@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 def train_test_split(X: pd.DataFrame | pd.Series, y: pd.Series, test_size: float=0.25, random_state: int=42):
@@ -17,10 +18,16 @@ def train_test_split(X: pd.DataFrame | pd.Series, y: pd.Series, test_size: float
 
     length = len(X)
 
-    # Shuffle the data and make sure to keep the targets stay paired with the feature data
-    # frac=1 says all records should be returned and drop=True prevents the old index from being added as a new column
-    shuffled_X = X.sample(frac=1, random_state=random_state).reset_index(drop=True)
-    shuffled_y = y.sample(frac=1, random_state=random_state).reset_index(drop=True)
+    if length != len(y):
+        raise ValueError("X and y must contain the same number of samples!")
+
+    # Generates a randomized ordering of row positions
+    rng = np.random.default_rng(random_state)
+    indices = rng.permutation(length)
+
+    # Apply the randomly generated ordering to both features and targets
+    shuffled_X = X.iloc[indices].reset_index(drop=True)
+    shuffled_y = y.iloc[indices].reset_index(drop=True)
 
     # If X has 1000 rows and test_size=0.3, use 700 rows for training and keep 300 for testing
     train_count = int(length * (1 - test_size))
