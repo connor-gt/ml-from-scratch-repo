@@ -101,15 +101,39 @@ class Evaluator:
             classification).
 
         Returns:
-            The recall for the specified class as a value between 0.0 and 1.0.
+            The recall for the specified class as a value between 0.0 and 1.0. Returns 0 if the total actual count
+            is 0 (prevents division by 0).
         '''
 
         predicted_positives = self.y_ == positive_class
         true_positives = predicted_positives & (self.t_ == positive_class)
-        return true_positives.sum() / (self.t_ == positive_class).sum() # (self.t_ == positive_class).sum() == all actual positives
+
+        all_actual_positives = (self.t_ == positive_class).sum() # (self.t_ == positive_class).sum() == all actual positives
+        if all_actual_positives == 0:
+            return 0
+
+        return true_positives.sum() / all_actual_positives
 
     def get_confusion_matrix(self, positive_class):
-        '''
+        '''Generate a binary confusion matrix for the specified positive class.
+
+        A confusion matrix shows how the model's predicted classes compare against the actual target classes. It separates
+        predictions into four categories:
+
+            True Positive (TP): Predicted positive and actually positive.
+            False Positive (FP): Predicted positive but actually negative.
+            True Negative (TN): Predicted negative and actually negative.
+            False Negative (FN): Predicted negative but actually positive.
+
+        This method uses a one-vs-rest approach, where the specified class is considered positive and every other class
+        is considered negative.
+
+        Args:
+            positive_class: The class label to evaluate (e.g., 1 for binary classification or 2 for multiclass classification).
+
+        Returns:
+            pd.DataFrame: A 3x3 table containing TP, FP, TN, and FN counts, including totals for actual positives, actual
+            negatives, predicted positives, predicted negatives, and all samples.
         '''
 
         predicted_positives = self.y_ == positive_class
@@ -117,10 +141,8 @@ class Evaluator:
         true_positives = predicted_positives & (self.t_ == positive_class)
         false_positives = predicted_positives & (self.t_ != positive_class)
 
-        predicted_negatives = self.y_ != positive_class
-
-        true_negatives = predicted_negatives & (self.t_ != positive_class)
-        false_negatives = predicted_negatives & (self.t_ == positive_class)
+        true_negatives = ~predicted_positives & (self.t_ != positive_class)
+        false_negatives = ~predicted_positives & (self.t_ == positive_class)
 
         tp_count = true_positives.sum()
         fp_count = false_positives.sum()
@@ -130,12 +152,6 @@ class Evaluator:
 
         actually_positive_count = np.sum(self.t_ == positive_class)
         actually_negative_count = np.sum(self.t_ != positive_class)
-
-        print("TP", tp_count)
-        print("FP", fp_count)
-
-        print("TN", tn_count)
-        print("FN", fn_count)
 
         confusion_matrix = {
             "Predicted Positive": [tp_count, fp_count, tp_count + fp_count],

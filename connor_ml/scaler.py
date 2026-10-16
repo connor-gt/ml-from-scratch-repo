@@ -54,8 +54,9 @@ class Scaler:
         if self.means_ is None or self.std_devs_ is None:
             raise RuntimeError("Scaler must be fitted before calling transform(). Use fit() or fit_transform().")
 
-        # TODO: if every sample has the same value for one feature, the standard deviation will be 0 so this will
-        # end being division by 0, find a fix
+        if self.std_devs_.eq(0).any():
+            raise ValueError("Standard deviation is zero for one or more features. Cannot standardize.")
+        
         X_standardized_z = (X - self.means_) / self.std_devs_
         return X_standardized_z
 
